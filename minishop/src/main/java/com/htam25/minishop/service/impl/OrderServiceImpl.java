@@ -39,25 +39,25 @@ public class OrderServiceImpl implements OrderService {
         order = orderRepository.save(order);
 
         double total = 0;
+
         for (CartItem item : cartItems) {
 
-            Product product = productRepository.findById(item.getProduct().getId())
-                    .orElseThrow(() -> new RuntimeException("Product not found"));
+            Product product = item.getProduct();
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
             orderItem.setProduct(product);
             orderItem.setQuantity(item.getQuantity());
-            orderItem.setPrice(item.getProduct().getPrice());
+            orderItem.setPrice(product.getPrice());
 
-            total += product.getPrice() * orderItem.getQuantity();
+            total += product.getPrice() * item.getQuantity();
             orderItemRepository.save(orderItem);
         }
 
         order.setTotalPrice(total);
         orderRepository.save(order);
 
-        cartItemRepository.deleteByUserId(userId);
+        cartItemRepository.deleteByUser_Id(userId);
 
         return order;
     }
