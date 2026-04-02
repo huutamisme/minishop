@@ -35,7 +35,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = new Order();
         order.setUser(user);
         order.setStatus(OrderStatus.PENDING);
-
+        order.setTotalPrice(0.0);
         order = orderRepository.save(order);
 
         double total = 0;
