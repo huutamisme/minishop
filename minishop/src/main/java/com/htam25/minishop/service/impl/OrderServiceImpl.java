@@ -1,6 +1,9 @@
 package com.htam25.minishop.service.impl;
 
+import com.htam25.minishop.dto.response.OrderItemResponse;
+import com.htam25.minishop.dto.response.OrderResponse;
 import com.htam25.minishop.entity.*;
+import com.htam25.minishop.mapper.OrderMapper;
 import com.htam25.minishop.repository.*;
 import com.htam25.minishop.service.OrderService;
 import jakarta.transaction.Transactional;
@@ -18,11 +21,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
-    private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
+    private final OrderMapper orderMapper;
     @Override
     @Transactional
-    public Order checkout(Long userId){
+    public OrderResponse checkout(Long userId){
         List<CartItem> cartItems = cartItemRepository.findByUser_Id(userId);
 
         if(cartItems.isEmpty()) {
@@ -57,14 +60,33 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalPrice(total);
         orderRepository.save(order);
 
+        List<OrderItem> orderItems = orderItemRepository.findByOrder_Id(order.getId());
+
+        List<OrderItemResponse> itemResponses = orderItems.stream()
+                .map(item -> {
+                    OrderItemResponse dto = new OrderItemResponse();
+                    dto.setProductId(item.getProduct().getId());
+                    dto.setProductName(item.getProduct().getName());
+                    dto.setPrice(item.getPrice());
+                    dto.setQuantity(item.getQuantity());
+                    return dto;
+                })
+                .toList();
+
+        OrderResponse response = new OrderResponse();
+        response.setId(order.getId());
+        response.setTotalPrice(order.getTotalPrice());
+        response.setStatus(order.getStatus().name());
+        response.setItems(itemResponses);
+
         cartItemRepository.deleteByUser_Id(userId);
 
-        return order;
+        return response;
     }
 
     @Override
-    public Page<Order> getUserOrders(Long userId, Pageable pageable) {
-        return orderRepository.findByUserId(userId, pageable);
+    public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
+        Page<Order> orders = orderRepository.findByUserId(userId, pageable);
+        return orders.map(orderMapper::toDto);
     }
-
 }

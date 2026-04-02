@@ -20,14 +20,12 @@ public class OrderController {
     @PostMapping("/checkout")
     public OrderResponse checkout(@RequestParam Long userId) {
 
-        Order order = orderService.checkout(userId);
-        return orderMapper.toDto(order);
+        return orderService.checkout(userId);
     }
 
     @GetMapping
     public Page<OrderResponse> getOrders (@RequestParam Long userId, Pageable pageable) {
-        return orderService.getUserOrders(userId, pageable)
-                .map(orderMapper::toDto);
+        return orderService.getUserOrders(userId, pageable);
     }
 
 }
