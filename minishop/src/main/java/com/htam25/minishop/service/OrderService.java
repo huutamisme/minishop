@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
-    OrderResponse checkout(Long userId);
+    OrderResponse checkout(String email);
 
     Page<OrderResponse> getUserOrders(Long userId, Pageable pageable);
 }

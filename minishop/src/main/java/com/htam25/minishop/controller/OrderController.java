@@ -7,6 +7,8 @@ import com.htam25.minishop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,9 +20,8 @@ public class OrderController {
     private final OrderMapper orderMapper;
 
     @PostMapping("/checkout")
-    public OrderResponse checkout(@RequestParam Long userId) {
-
-        return orderService.checkout(userId);
+    public OrderResponse checkout(@AuthenticationPrincipal UserDetails user) {
+        return orderService.checkout(user.getUsername());
     }
 
     @GetMapping
