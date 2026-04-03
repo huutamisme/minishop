@@ -25,15 +25,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     @Override
     @Transactional
-    public OrderResponse checkout(Long userId){
-        List<CartItem> cartItems = cartItemRepository.findByUser_Id(userId);
+    public OrderResponse checkout(String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        List<CartItem> cartItems = cartItemRepository.findByUser_Id(user.getId());
 
         if(cartItems.isEmpty()) {
             throw new RuntimeException("Cart is empty");
         }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Order order = new Order();
         order.setUser(user);
@@ -79,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         response.setStatus(order.getStatus().name());
         response.setItems(itemResponses);
 
-        cartItemRepository.deleteByUser_Id(userId);
+        cartItemRepository.deleteByUser_Id(user.getId());
 
         return response;
     }
