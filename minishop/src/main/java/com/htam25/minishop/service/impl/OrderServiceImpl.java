@@ -5,6 +5,7 @@ import com.htam25.minishop.dto.response.OrderResponse;
 import com.htam25.minishop.entity.*;
 import com.htam25.minishop.mapper.OrderMapper;
 import com.htam25.minishop.repository.*;
+import com.htam25.minishop.security.user.CurrentUserService;
 import com.htam25.minishop.service.OrderService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,11 +24,13 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepository userRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderMapper orderMapper;
+    private final CurrentUserService currentUserService;
     @Override
     @Transactional
-    public OrderResponse checkout(String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public OrderResponse checkout(){
+
+        User user = currentUserService.getCurrentUser();
+
         List<CartItem> cartItems = cartItemRepository.findByUser_Id(user.getId());
 
         if(cartItems.isEmpty()) {
@@ -84,7 +87,8 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Page<OrderResponse> getUserOrders(Long userId, Pageable pageable) {
+    public Page<OrderResponse> getUserOrders(Pageable pageable) {
+        Long userId = currentUserService.getUserId();
         Page<Order> orders = orderRepository.findByUserId(userId, pageable);
         return orders.map(orderMapper::toDto);
     }
