@@ -6,6 +6,7 @@ import com.htam25.minishop.entity.User;
 import com.htam25.minishop.repository.CartItemRepository;
 import com.htam25.minishop.repository.ProductRepository;
 import com.htam25.minishop.repository.UserRepository;
+import com.htam25.minishop.security.user.CurrentUserService;
 import com.htam25.minishop.service.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,12 +20,13 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final UserRepository userRepository;
     private final ProductRepository productRepository;
+    private final CurrentUserService currentUserService;
 
     @Override
-    public void addToCart(Long userId, Long productId, int quantity) {
+    public void addToCart(Long productId, int quantity) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = currentUserService.getCurrentUser();
+        Long userId = currentUserService.getUserId();
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
@@ -43,20 +45,21 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void removeFromCart(Long userId, Long productId){
+    public void removeFromCart(Long productId){
+        Long userId = currentUserService.getUserId();
         cartItemRepository.findByUser_IdAndProduct_Id(userId, productId)
                 .ifPresent(cartItemRepository::delete);
     }
 
     @Override
-    public List<CartItem> getCart(Long userId) {
+    public List<CartItem> getCart() {
+        Long userId = currentUserService.getUserId();
         return cartItemRepository.findByUser_Id(userId);
     }
 
     @Override
-    public void clearCart(Long userId) {
+    public void clearCart() {
+        Long userId = currentUserService.getUserId();
         cartItemRepository.deleteByUser_Id(userId);
     }
-
-
 }

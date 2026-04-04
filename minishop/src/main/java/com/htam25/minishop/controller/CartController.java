@@ -19,23 +19,21 @@ public class CartController {
     private final CartMapper cartMapper;
 
     @PostMapping
-    public void addToCart(
-            @RequestParam Long userId,
-            @Valid @RequestBody AddToCartRequest request) {
-        cartService.addToCart(userId, request.getProductId(), request.getQuantity());
+    public void addToCart(@Valid @RequestBody AddToCartRequest request) {
+        cartService.addToCart(request.getProductId(), request.getQuantity());
     }
 
     @GetMapping
-    public List<CartItemResponse> getCart(@RequestParam Long userId) {
-        return cartService.getCart(userId)
+    public List<CartItemResponse> getCart() {
+        return cartService.getCart()
                 .stream()
                 .map(cartMapper::toDto)
                 .toList();
     }
 
     @DeleteMapping
-    public void clearCart(@RequestParam Long userId) {
-        cartService.clearCart(userId);
+    public void clearCart() {
+        cartService.clearCart();
     }
 
 }
