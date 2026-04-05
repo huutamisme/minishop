@@ -1,8 +1,17 @@
 package com.htam25.minishop.controller;
 
 import com.htam25.minishop.dto.request.LoginRequest;
+import com.htam25.minishop.dto.request.RegisterRequest;
 import com.htam25.minishop.dto.response.AuthResponse;
+import com.htam25.minishop.entity.RefreshToken;
+import com.htam25.minishop.entity.User;
+import com.htam25.minishop.repository.UserRepository;
 import com.htam25.minishop.security.jwt.JwtUtil;
+import com.htam25.minishop.security.util.CookieUtil;
+import com.htam25.minishop.service.RefreshTokenService;
+import com.htam25.minishop.service.impl.AuthServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,23 +26,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
+    private final AuthServiceImpl authService;
 
     @PostMapping("/login")
-    public AuthResponse login(@RequestBody LoginRequest request) {
+    public AuthResponse login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        return authService.login(request, response);
+    }
 
-        var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
+    @PostMapping("/refresh")
+    public AuthResponse refresh(HttpServletRequest request) {
+        return authService.refresh(request);
+    }
 
-        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response, HttpServletRequest request) {
+        authService.logout(response, request);
+    }
 
-        String token = jwtUtil.generateToken(userDetails.getUsername());
-
-        return new AuthResponse(token, "Bearer");
+    @PostMapping("/register")
+    public AuthResponse register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+        return authService.register(request, response);
     }
 }
