@@ -8,6 +8,7 @@ import com.htam25.minishop.repository.UserRepository;
 import com.htam25.minishop.security.jwt.JwtUtil;
 import com.htam25.minishop.security.util.CookieUtil;
 import com.htam25.minishop.service.RefreshTokenService;
+import com.htam25.minishop.service.impl.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -24,53 +25,20 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    private final UserRepository userRepository;
-    private final RefreshTokenService refreshTokenService;
+    private final AuthServiceImpl authService;
 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request, HttpServletResponse response) {
-
-        var auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-
-        User user = userRepository.findByEmail(request.getEmail()).get();
-
-        String accessToken = jwtUtil.generateToken(user.getEmail());
-
-        RefreshToken refreshToken = refreshTokenService.create(user);
-
-        CookieUtil.addRefreshToken(response, refreshToken.getToken());
-
-        return new AuthResponse(accessToken, "Bearer");
+        return authService.login(request, response);
     }
 
     @PostMapping("/refresh")
     public AuthResponse refresh(HttpServletRequest request) {
-        String tokenStr = CookieUtil.getRefreshToken(request);
-
-        RefreshToken token = refreshTokenService.verify(tokenStr);
-
-        String newAccessToken = jwtUtil.generateToken(
-                token.getUser().getEmail()
-        );
-
-        return new AuthResponse(newAccessToken, "Bearer");
+        return authService.refresh(request);
     }
 
     @PostMapping("/logout")
     public void logout(HttpServletResponse response, HttpServletRequest request) {
-        String tokenStr = CookieUtil.getRefreshToken(request);
-
-        if(tokenStr != null) {
-            refreshTokenService.revoke(tokenStr);
-        }
-
-        CookieUtil.clear(response);
+        authService.logout(response, request);
     }
 }
