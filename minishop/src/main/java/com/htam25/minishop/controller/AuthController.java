@@ -1,6 +1,7 @@
 package com.htam25.minishop.controller;
 
 import com.htam25.minishop.dto.request.LoginRequest;
+import com.htam25.minishop.dto.request.RegisterRequest;
 import com.htam25.minishop.dto.response.AuthResponse;
 import com.htam25.minishop.entity.RefreshToken;
 import com.htam25.minishop.entity.User;
@@ -40,5 +41,10 @@ public class AuthController {
     @PostMapping("/logout")
     public void logout(HttpServletResponse response, HttpServletRequest request) {
         authService.logout(response, request);
+    }
+
+    @PostMapping("/register")
+    public AuthResponse register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+        return authService.register(request, response);
     }
 }
