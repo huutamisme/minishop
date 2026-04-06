@@ -32,18 +32,6 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, message);
     }
 
-    // Runtime chung
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ApiErrorResponse> handleRuntime(RuntimeException ex) {
-        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
-    }
-
-    // Exception fallback
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiErrorResponse> handleException(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error");
-    }
-
     // helper
     private ResponseEntity<ApiErrorResponse> buildResponse(HttpStatus status, String message) {
         ApiErrorResponse response = new ApiErrorResponse(
