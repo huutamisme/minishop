@@ -14,6 +14,11 @@ import java.time.LocalDateTime;
 @Component
 public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
+    private final ObjectMapper objectMapper;
+
+    public CustomAccessDeniedHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
     @Override
     public void handle(HttpServletRequest request,
                        HttpServletResponse response,
@@ -29,6 +34,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
                 LocalDateTime.now()
         );
 
-        new ObjectMapper().writeValue(response.getOutputStream(), error);
+        objectMapper.writeValue(response.getOutputStream(), error);
     }
 }

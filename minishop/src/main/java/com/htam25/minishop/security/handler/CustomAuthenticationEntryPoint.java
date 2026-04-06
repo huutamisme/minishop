@@ -15,6 +15,12 @@ import java.time.LocalDateTime;
 @Component
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
+    private final ObjectMapper objectMapper;
+
+    public CustomAuthenticationEntryPoint(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Override
     public void commence(HttpServletRequest request,
                          HttpServletResponse response,
@@ -30,6 +36,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
                 LocalDateTime.now()
         );
 
-        new ObjectMapper().writeValue(response.getOutputStream(), error);
+        objectMapper.writeValue(response.getOutputStream(), error);
     }
 }
