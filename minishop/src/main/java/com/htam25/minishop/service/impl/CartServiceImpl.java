@@ -5,7 +5,6 @@ import com.htam25.minishop.entity.Product;
 import com.htam25.minishop.entity.User;
 import com.htam25.minishop.repository.CartItemRepository;
 import com.htam25.minishop.repository.ProductRepository;
-import com.htam25.minishop.repository.UserRepository;
 import com.htam25.minishop.security.user.CurrentUserService;
 import com.htam25.minishop.service.CartService;
 import lombok.RequiredArgsConstructor;

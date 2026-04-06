@@ -1,6 +1,7 @@
 package com.htam25.minishop.exception;
 
 import com.htam25.minishop.dto.response.ApiErrorResponse;
+import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -30,6 +31,16 @@ public class GlobalExceptionHandler {
                 .orElse("Validation error");
 
         return buildResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ApiErrorResponse> handleBadRequest(BadRequestException ex) {
+        return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiErrorResponse> handleAll(Exception ex) {
+        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     // helper
