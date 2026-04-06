@@ -8,6 +8,8 @@ public interface CartService {
 
     void addToCart(Long productId, int quantity);
 
+    void updateCartItem(Long cartItemId, int quantity);
+
     void removeFromCart(Long productId);
 
     List<CartItem> getCart();
