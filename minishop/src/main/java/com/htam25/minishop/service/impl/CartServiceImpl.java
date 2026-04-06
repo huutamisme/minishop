@@ -53,10 +53,8 @@ public class CartServiceImpl implements CartService {
     @Override
     public void updateCartItem(Long cartItemId, int quantity) {
 
-        User user = currentUserService.getCurrentUser();
-        System.out.println(cartItemId);
-        System.out.println(user.getId());
-        CartItem cartItem = cartItemRepository.findByIdAndUser_Id(cartItemId, user.getId())
+        Long userId = currentUserService.getUserId();
+        CartItem cartItem = cartItemRepository.findByIdAndUser_Id(cartItemId, userId)
                 .orElseThrow(() -> new RuntimeException("Cart item not found"));
 
         Product product = cartItem.getProduct();
