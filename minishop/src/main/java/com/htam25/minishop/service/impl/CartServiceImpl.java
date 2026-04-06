@@ -3,9 +3,9 @@ package com.htam25.minishop.service.impl;
 import com.htam25.minishop.entity.CartItem;
 import com.htam25.minishop.entity.Product;
 import com.htam25.minishop.entity.User;
+import com.htam25.minishop.exception.BadRequestException;
 import com.htam25.minishop.repository.CartItemRepository;
 import com.htam25.minishop.repository.ProductRepository;
-import com.htam25.minishop.repository.UserRepository;
 import com.htam25.minishop.security.user.CurrentUserService;
 import com.htam25.minishop.service.CartService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,6 @@ import java.util.List;
 public class CartServiceImpl implements CartService {
 
     private final CartItemRepository cartItemRepository;
-    private final UserRepository userRepository;
     private final ProductRepository productRepository;
     private final CurrentUserService currentUserService;
 
@@ -33,22 +32,49 @@ public class CartServiceImpl implements CartService {
 
         CartItem cartItem = cartItemRepository
                 .findByUser_IdAndProduct_Id(userId, productId)
-                .orElseGet(() -> {
-                    CartItem newItem = new CartItem();
-                    newItem.setUser(user);
-                    newItem.setProduct(product);
-                    newItem.setQuantity(0);
-                    return newItem;
-                });
-        cartItem.setQuantity(cartItem.getQuantity() + quantity);
+                .orElseGet(() -> null);
+
+        int cartQuantity = (cartItem != null) ? cartItem.getQuantity() : 0;
+        int newQuantity = quantity + cartQuantity;
+
+        if (newQuantity > product.getStock()) {
+            throw new RuntimeException("Not enough stock");
+        }
+
+        if (cartItem == null) {
+            cartItem = new CartItem();
+            cartItem.setUser(user);
+            cartItem.setProduct(product);
+        }
+
+        cartItem.setQuantity(newQuantity);
         cartItemRepository.save(cartItem);
     }
 
     @Override
-    public void removeFromCart(Long productId){
+    public void updateCartItem(Long cartItemId, int quantity) {
+
         Long userId = currentUserService.getUserId();
-        cartItemRepository.findByUser_IdAndProduct_Id(userId, productId)
-                .ifPresent(cartItemRepository::delete);
+        CartItem cartItem = cartItemRepository.findByIdAndUser_Id(cartItemId, userId)
+                .orElseThrow(() -> new RuntimeException("Cart item not found"));
+
+        Product product = cartItem.getProduct();
+        if (quantity > product.getStock()) {
+            throw new RuntimeException("Not enough stock");
+        }
+
+        cartItem.setQuantity(quantity);
+        cartItemRepository.save(cartItem);
+
+    }
+
+    @Override
+    public void removeFromCart(Long cartItemId){
+        Long userId = currentUserService.getUserId();
+        CartItem cartItem = cartItemRepository.findByIdAndUser_Id(cartItemId, userId)
+                .orElseThrow(() -> new BadRequestException("Cart item not found"));
+
+        cartItemRepository.delete(cartItem);
     }
 
     @Override
