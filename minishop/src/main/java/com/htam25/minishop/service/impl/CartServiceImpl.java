@@ -3,6 +3,7 @@ package com.htam25.minishop.service.impl;
 import com.htam25.minishop.entity.CartItem;
 import com.htam25.minishop.entity.Product;
 import com.htam25.minishop.entity.User;
+import com.htam25.minishop.exception.BadRequestException;
 import com.htam25.minishop.repository.CartItemRepository;
 import com.htam25.minishop.repository.ProductRepository;
 import com.htam25.minishop.security.user.CurrentUserService;
@@ -68,10 +69,12 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void removeFromCart(Long productId){
+    public void removeFromCart(Long cartItemId){
         Long userId = currentUserService.getUserId();
-        cartItemRepository.findByUser_IdAndProduct_Id(userId, productId)
-                .ifPresent(cartItemRepository::delete);
+        CartItem cartItem = cartItemRepository.findByIdAndUser_Id(cartItemId, userId)
+                .orElseThrow(() -> new BadRequestException("Cart item not found"));
+
+        cartItemRepository.delete(cartItem);
     }
 
     @Override
