@@ -1,18 +1,18 @@
 -- ========================
 -- ROLES
 -- ========================
-INSERT INTO roles (name) VALUES ('ROLE_USER');
-INSERT INTO roles (name) VALUES ('ROLE_ADMIN');
+INSERT INTO roles (name) VALUES ('USER');
+INSERT INTO roles (name) VALUES ('ADMIN');
 
 -- ========================
 -- USERS
--- password: 123456 (plain, chưa encode)
+-- password: 123456
 -- ========================
 INSERT INTO users (id, email, password, username, role_id)
-VALUES (1, 'user@gmail.com', '123456', 'Normal User', 1);
+VALUES (1, 'user@gmail.com', '$2a$10$qN6CAh0JbwZtIfpwpNH4C.zqyxgq1yy7Tj/soFiMeSQNFG4klMgRO', 'Normal User', 1);
 
 INSERT INTO users (id, email, password, username, role_id)
-VALUES (2, 'admin@gmail.com', '123456', 'Admin User', 2);
+VALUES (2, 'admin@gmail.com', '$2a$10$SZggHMNdFzIybtzxyjfwFuiolO47zyt2OD8jhoqckl9ysufpAZ0DG', 'Admin User', 2);
 
 -- ========================
 -- CATEGORIES

@@ -30,6 +30,10 @@ public class CartServiceImpl implements CartService {
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
+        if(product.getDeleted()){
+            throw new RuntimeException("Product is no longer available");
+        }
+
         CartItem cartItem = cartItemRepository
                 .findByUser_IdAndProduct_Id(userId, productId)
                 .orElseGet(() -> null);
