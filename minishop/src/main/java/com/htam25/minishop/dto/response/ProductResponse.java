@@ -1,8 +1,11 @@
 package com.htam25.minishop.dto.response;
 
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductResponse {
     private Long id;
     private String name;
