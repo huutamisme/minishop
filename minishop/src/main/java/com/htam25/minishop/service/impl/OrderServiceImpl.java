@@ -21,7 +21,7 @@ public class OrderServiceImpl implements OrderService {
 
     private final OrderRepository orderRepository;
     private final CartItemRepository cartItemRepository;
-    private final UserRepository userRepository;
+    private final ProductRepository productRepository;
     private final OrderItemRepository orderItemRepository;
     private final OrderMapper orderMapper;
     private final CurrentUserService currentUserService;
@@ -48,6 +48,12 @@ public class OrderServiceImpl implements OrderService {
         for (CartItem item : cartItems) {
 
             Product product = item.getProduct();
+
+            if(item.getQuantity() > product.getStock()) {
+                throw new RuntimeException("Not enough stock for product: " + product.getName());
+            }
+
+            product.setStock(product.getStock() - item.getQuantity());
 
             OrderItem orderItem = new OrderItem();
             orderItem.setOrder(order);
