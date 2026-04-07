@@ -15,7 +15,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     @Query("SELECT p FROM Product p WHERE p.id = :id")
     Product findByIdForUpdate(Long id);
 
-    Page<Product> findByCategoryId(Long categoryId, Pageable pageable);
+    Page<Product> findByDeletedFalse(Pageable pageable);
 
-    Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
+    Page<Product> findByCategoryIdAndDeletedFalse(Long categoryId, Pageable pageable);
+
+    Page<Product> findByNameContainingIgnoreCaseAndDeletedFalse(String keyword, Pageable pageable);
 }
