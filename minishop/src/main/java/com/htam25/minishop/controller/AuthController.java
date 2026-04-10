@@ -12,6 +12,7 @@ import com.htam25.minishop.service.RefreshTokenService;
 import com.htam25.minishop.service.impl.AuthServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,7 +45,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody RegisterRequest request, HttpServletResponse response) {
+    public AuthResponse register(@Valid @RequestBody RegisterRequest request, HttpServletResponse response) {
         return authService.register(request, response);
     }
 }

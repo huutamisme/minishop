@@ -39,16 +39,7 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Product not found"));
 
-        String categoryName = categoryRepository.findById(product.getId()).get().getName();
-
-        return ProductResponse.builder()
-                .id(product.getId())
-                .name(product.getName())
-                .categoryName(categoryName)
-                .description(product.getDescription())
-                .price(product.getPrice())
-                .stock(product.getStock())
-                .build();
+        return productMapper.toDto(product);
     }
 
     @Override
